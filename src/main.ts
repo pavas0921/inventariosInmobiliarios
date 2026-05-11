@@ -4,9 +4,28 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // 🔍 DEBUG: Verificar variable de entorno
+  console.log('MONGO_URI:', process.env.MONGO_URI);
+
+  // 🔍 DEBUG: Eventos de conexión MongoDB
+  mongoose.connection.on('connected', () => {
+    console.log('✅ MongoDB conectado');
+    console.log('📦 DB:', mongoose.connection.name);
+    console.log('🌐 Host:', mongoose.connection.host);
+  });
+
+  mongoose.connection.on('error', (err) => {
+    console.error('❌ Error de MongoDB:', err);
+  });
+
+  mongoose.connection.on('disconnected', () => {
+    console.warn('⚠️ MongoDB desconectado');
+  });
 
   // Seguridad HTTP Headers
   app.use(helmet());
@@ -15,12 +34,12 @@ async function bootstrap() {
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15 minutos
-      max: 100, // Máx. 100 peticiones por IP
+      max: 100,
       message: 'Demasiadas peticiones desde esta IP, intenta más tarde',
     }),
   );
 
-  // Validación y transformación global
+  // Validación global
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -29,9 +48,7 @@ async function bootstrap() {
     }),
   );
 
-  // ==========================
-  // Configuración de Swagger
-  // ==========================
+  // Swagger
   const config = new DocumentBuilder()
     .setTitle('Inventarios API')
     .setDescription('Documentación de la API de Inventarios')
@@ -44,23 +61,23 @@ async function bootstrap() {
       },
       'bearer',
     )
-
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document); // URL: /api/docs
+  SwaggerModule.setup('api/docs', app, document);
 
-  // Arrancar servidor
-  const port = Number(process.env.PORT) || 3000;
-
+  // CORS
   app.enableCors({
-    origin: ['http://localhost:5173'], // origen permitido (tu frontend)
+    origin: ['http://localhost:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // si usas cookies o headers de autenticación
+    credentials: true,
   });
 
+  const port = Number(process.env.PORT) || 3000;
   await app.listen(port);
+
   console.log(`Servidor corriendo en http://localhost:${port}`);
   console.log(`Swagger disponible en http://localhost:${port}/api/docs`);
 }
+
 bootstrap();

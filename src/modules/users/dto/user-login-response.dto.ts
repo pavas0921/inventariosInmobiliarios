@@ -54,4 +54,7 @@ export class UserLoginResponseDto {
 
   @Expose() // 👈 se mantiene visible para la comparación interna de contraseñas
   readonly password: string;
+
+  @Expose()
+  readonly companyId: string;
 }

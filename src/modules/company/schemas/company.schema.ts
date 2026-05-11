@@ -24,7 +24,12 @@ export class Company extends Document {
   @Prop({ required: true })
   city: string;
 
-  @Prop({ default: true })
+  @Prop({
+    type: Date,
+  })
+  demoExpiresAt?: Date;
+
+  @Prop({ default: false })
   isActive: boolean;
 }
 

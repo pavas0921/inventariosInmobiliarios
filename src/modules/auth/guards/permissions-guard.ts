@@ -4,48 +4,46 @@ import {
   ExecutionContext,
   ForbiddenException,
 } from '@nestjs/common';
+
+import { Reflector } from '@nestjs/core';
 import { UsersService } from 'src/modules/users/users.service';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
+
     const user = request.user;
 
-    console.log(user);
-    if (!user) throw new ForbiddenException('Usuario no autenticado');
+    if (!user) {
+      throw new ForbiddenException('Usuario no autenticado');
+    }
 
-    // 🔸 Obtenemos el usuario actualizado desde la BD con roles y permisos
-    const dbUser = await this.usersService.findByIdWithRoles(user.userId);
+    // Permisos requeridos por el endpoint
+    const requiredPermissions =
+      this.reflector.get<string[]>('permissions', context.getHandler()) || [];
 
-    if (!dbUser) throw new ForbiddenException('Usuario no encontrado');
+    // Si el endpoint no requiere permisos
+    if (requiredPermissions.length === 0) {
+      return true;
+    }
 
-    // 🔸 Extraemos los permisos actuales del token (flatten)
-    const tokenPermissions = (user.roles ?? [])
-      .flatMap((r: any) => r.permissionIds ?? [])
-      .map((p: any) => p._id?.toString());
+    // Permisos del JWT
+    const userPermissions = user.permissions || [];
 
-    // 🔸 Extraemos los permisos desde la base de datos (flatten)
-    const dbPermissions = (dbUser.roles ?? [])
-      .flatMap((r: any) => r.permissionIds ?? [])
-      .map((p: any) => p._id?.toString());
-
-    // 🔸 Comparamos si hay discrepancias
-    const missingInToken = dbPermissions.filter(
-      (permId) => !tokenPermissions.includes(permId),
+    // Verificar permisos
+    const hasPermissions = requiredPermissions.every((permission) =>
+      userPermissions.includes(permission),
     );
 
-    console.log(missingInToken);
-
-    if (missingInToken.length > 0) {
-      console.warn(
-        '⚠️ El token no coincide con los permisos actuales del usuario.',
-      );
-      console.log('Faltantes:', missingInToken);
+    if (!hasPermissions) {
       throw new ForbiddenException(
-        'Los permisos del token no coinciden con los permisos actuales del usuario.',
+        'No tienes permisos para realizar esta acción',
       );
     }
 

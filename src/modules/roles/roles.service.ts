@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateRolDto } from './dto/create-rol.dto';
@@ -47,5 +47,15 @@ export class RolesService {
         message: 'Failed to retrieve roles',
       };
     }
+  }
+
+  async findByName(rolName: string): Promise<Rol> {
+    const role = await this.rolModel.findOne({ rolName });
+
+    if (!role) {
+      throw new NotFoundException(`Rol ${rolName} no encontrado`);
+    }
+
+    return role;
   }
 }

@@ -9,6 +9,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
 import { CompanyModule } from './modules/company/company.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { RegistrationModule } from './modules/registration/registration.module';
+import { MailModule } from './modules/mail/mail.module';
+import { PropertyModule } from './modules/property/property.module';
 
 @Module({
   imports: [
@@ -21,6 +25,10 @@ import { CompanyModule } from './modules/company/company.module';
     UsersModule,
     AuthModule,
     CompanyModule,
+    CustomersModule,
+    RegistrationModule,
+    MailModule,
+    PropertyModule,
   ],
   controllers: [],
   providers: [

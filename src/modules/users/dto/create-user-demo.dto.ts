@@ -4,16 +4,12 @@ import {
   Length,
   IsEmail,
   MaxLength,
-  IsArray,
-  IsMongoId,
-  ArrayMinSize,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { Types } from 'mongoose';
 import { PasswordValidationPipe } from '../../../common/pipes/password-validation-pipe';
 
-export class CreateUserDto {
+export class CreateUserDemoDto {
   @ApiProperty({
     example: 'Andrés',
     description: 'Nombre del usuario',
@@ -67,15 +63,4 @@ export class CreateUserDto {
   })
   @Transform(({ value }) => new PasswordValidationPipe().transform(value))
   password: string;
-
-  @ApiProperty({
-    example: ['665f1c2f9a8b3c0012345678'],
-    description: 'Lista de IDs de roles asignados al usuario',
-  })
-  @IsArray()
-  @IsMongoId({ each: true })
-  @ArrayMinSize(1, {
-    message: 'El usuario debe tener al menos un rol asignado',
-  })
-  roles: Types.ObjectId[];
 }

@@ -10,11 +10,12 @@ export class AuthController {
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const accessToken = await this.authService.login(loginDto);
+    const userData = await this.authService.login(loginDto);
 
     return {
       message: 'Login successful',
-      accessToken,
+      accessToken: userData.accessToken,
+      user: userData.user,
     };
   }
 }
