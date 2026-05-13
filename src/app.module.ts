@@ -13,6 +13,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { RegistrationModule } from './modules/registration/registration.module';
 import { MailModule } from './modules/mail/mail.module';
 import { PropertyModule } from './modules/property/property.module';
+import { OwnerModule } from './modules/owner/owner.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PropertyModule } from './modules/property/property.module';
     RegistrationModule,
     MailModule,
     PropertyModule,
+    OwnerModule,
   ],
   controllers: [],
   providers: [
