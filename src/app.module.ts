@@ -14,6 +14,11 @@ import { RegistrationModule } from './modules/registration/registration.module';
 import { MailModule } from './modules/mail/mail.module';
 import { PropertyModule } from './modules/property/property.module';
 import { OwnerModule } from './modules/owner/owner.module';
+import { TenantModule } from './modules/tenant/tenant.module';
+import { ContractModule } from './modules/contract/contract.module';
+import { InventoryHeaderModule } from './modules/inventory-header/inventory-header.module';
+import { AmbientModule } from './modules/ambient/ambient.module';
+import { ItemModule } from './modules/item/item.module';
 
 @Module({
   imports: [
@@ -31,6 +36,11 @@ import { OwnerModule } from './modules/owner/owner.module';
     MailModule,
     PropertyModule,
     OwnerModule,
+    TenantModule,
+    ContractModule,
+    InventoryHeaderModule,
+    AmbientModule,
+    ItemModule,
   ],
   controllers: [],
   providers: [
